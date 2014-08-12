@@ -39,54 +39,55 @@
 
   var elementClickHandler = function() {
     if(d3.event.defaultPrevented) return;
-    console.log(d3.event);
-    selectedElement = this;
-    d3.select(this).classed("selected", true);
-  }
+    if(selectedElement !== null) selectedElement.classed("selected", false);
+    selectedElement = d3.select(this);
+    selectedElement.classed("selected", true);
+  };
 
   var internalClickHandler = function() {
     if(d3.event.defaultPrevented) return;
-    if(selectedElement != null && d3.event.toElement !== "rect#bounding-rect") {
-      console.log(d3.event.toElement);
-      d3.select(selectedElement).classed("selected", false);
-      selectedElement = null;
-    }
-    else {
-      var location = d3.mouse(this);
-      container.append("g").append("circle").attr("cx", location[0]).attr("cy", location[1])
-      .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
-      .attr("fill", "green").call(drag).on("click", elementClickHandler);
-    }
+    if(selectedElement !== null) {
+     if(d3.event.toElement.id === "bounding-rect"){
+       selectedElement.classed("selected", false);
+       selectedElement = null;	    
+     }
+   }
+   else {
+    var location = d3.mouse(this);
+    container.append("g").append("circle").attr("cx", location[0]).attr("cy", location[1])
+    .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
+    .attr("fill", "green").call(drag).on("click", elementClickHandler);
   }
+};
 
-  function zoomed() {
-    d3.select("#main-container").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-  }
+function zoomed() {
+  d3.select("#main-container").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
 
-  function dragstarted(d) {
-    d3.event.sourceEvent.stopPropagation();
-    d3.select(this).classed("dragging", true);
-  }
+function dragstarted(d) {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", true);
+}
 
-  function dragged() {
-    var el = d3.select(this);
-    el.attr("cx", d3.event.x);
-    el.attr("cy", d3.event.y);
-  }
+function dragged() {
+  var el = d3.select(this);
+  el.attr("cx", d3.event.x);
+  el.attr("cy", d3.event.y);
+}
 
-  function dragended(d) {
-    d3.event.sourceEvent.stopPropagation();
-    d3.select(this).classed("dragging", false);
-  }
+function dragended(d) {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", false);
+}
 
-  var width = screen.availWidth * 3;
-  var height = screen.availHeight * 3;
-  var svg = d3.select("#main-content").append("svg")
-  .attr("id", "main-svg")
-  .style("width", width)
-  .style("height", height)
-  .append("g").attr("transform", "translate(0, 0)").call(zoom);
+var width = screen.availWidth * 3;
+var height = screen.availHeight * 3;
+var svg = d3.select("#main-content").append("svg")
+.attr("id", "main-svg")
+.style("width", width)
+.style("height", height)
+.append("g").attr("transform", "translate(0, 0)").call(zoom);
 
-  var container = svg.append("g").attr("id", "main-container").on("click", internalClickHandler);
-  container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
+var container = svg.append("g").attr("id", "main-container").on("click", internalClickHandler);
+container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
 });
