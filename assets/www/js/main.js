@@ -22,50 +22,45 @@
   mainContent.css("width", "100%");
   mainContent.css("height", screen.availHeight * .6 + "px");
 
+  var selectedElement = null;
+
   var zoom = d3.behavior.zoom()
   .scaleExtent([.15, 10])
   .on("zoom", zoomed);
 
-  var internalClickHandler = function(){
-    if(d3.event.defaultPrevented) return;
-    var transformText = d3.select("#main-container").attr("transform");
-    var xOffset, yOffset;
-    if(transformText === null) {
-      xOffset = 0;
-      yOffset = 0;
-    }
-    else {
-      xOffset = parseFloat(transformText.substring(transformText.indexOf("(") + 1, transformText.indexOf(",")));
-      yOffset = parseFloat(transformText.substring(transformText.indexOf(",") + 1, transformText.indexOf(")")));
-    }
-    console.log(xOffset);
-    console.log(yOffset);
-    var location = d3.mouse(this);
-    console.log(location);
-    container.append("circle").attr("cx", parseInt(location[0]) + xOffset).attr("cy", parseInt(location[1]) + yOffset)
-                              .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
-                              .attr("fill", "none");
-  }
-
   var drag = d3.behavior.drag()
-  .origin(function(d) { return d; })
+  .origin(function() {
+    var t = d3.select(this);
+    return {x: t.attr("cx"), y: t.attr("cy")};
+  })
   .on("dragstart", dragstarted)
   .on("drag", dragged)
   .on("dragend", dragended);
 
-  var width = screen.availWidth * 3;
-  var height = screen.availHeight * 3;
-  var svg = d3.select("#main-content").append("svg")
-  .attr("id", "main-svg")
-  .style("width", width)
-  .style("height", height)
-  .append("g").attr("transform", "translate(0, 0)").call(zoom).on("click", internalClickHandler);
+  var elementClickHandler = function() {
+    if(d3.event.defaultPrevented) return;
+    console.log(d3.event);
+    selectedElement = this;
+    d3.select(this).classed("selected", true);
+  }
 
-  var container = svg.append("g").attr("id", "main-container");
-  container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
+  var internalClickHandler = function() {
+    if(d3.event.defaultPrevented) return;
+    if(selectedElement != null && d3.event.toElement !== "rect#bounding-rect") {
+      console.log(d3.event.toElement);
+      d3.select(selectedElement).classed("selected", false);
+      selectedElement = null;
+    }
+    else {
+      var location = d3.mouse(this);
+      container.append("g").append("circle").attr("cx", location[0]).attr("cy", location[1])
+      .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
+      .attr("fill", "green").call(drag).on("click", elementClickHandler);
+    }
+  }
 
   function zoomed() {
-    container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    d3.select("#main-container").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
   }
 
   function dragstarted(d) {
@@ -73,11 +68,25 @@
     d3.select(this).classed("dragging", true);
   }
 
-  function dragged(d) {
-    d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  function dragged() {
+    var el = d3.select(this);
+    el.attr("cx", d3.event.x);
+    el.attr("cy", d3.event.y);
   }
 
   function dragended(d) {
+    d3.event.sourceEvent.stopPropagation();
     d3.select(this).classed("dragging", false);
   }
+
+  var width = screen.availWidth * 3;
+  var height = screen.availHeight * 3;
+  var svg = d3.select("#main-content").append("svg")
+  .attr("id", "main-svg")
+  .style("width", width)
+  .style("height", height)
+  .append("g").attr("transform", "translate(0, 0)").call(zoom);
+
+  var container = svg.append("g").attr("id", "main-container").on("click", internalClickHandler);
+  container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
 });

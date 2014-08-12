@@ -59,10 +59,21 @@ blockquote::before {
 
 #bounding-rect {
 	fill: none;
-	stroke: black;
+	stroke: gray;
 	stroke-width: 5;
 	opacity: 0.5;
 	pointer-events: all;
+}
+
+.dragging {
+	stroke: red;
+	stroke-width: 5;
+	fill: blue;
+}
+
+.selected {
+	stroke: blue;
+	fill: red;
 }
 
 @media all and (min-width: 500px) and (orientation:landscape),
