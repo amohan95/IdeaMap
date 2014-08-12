@@ -17,6 +17,8 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+ var eventStack = [];
+
  $('#page-home').live('pageinit', function(event) {
   var mainContent = $("#main-content");
   mainContent.css("width", "100%");
@@ -49,12 +51,12 @@
     if(selectedElement !== null) {
      if(d3.event.toElement.id === "bounding-rect"){
        selectedElement.classed("selected", false);
-       selectedElement = null;	    
+       selectedElement = null;
      }
    }
    else {
     var location = d3.mouse(this);
-    container.append("g").append("circle").attr("cx", location[0]).attr("cy", location[1])
+    container.append("circle").attr("cx", location[0]).attr("cy", location[1])
     .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
     .attr("fill", "green").call(drag).on("click", elementClickHandler);
   }
@@ -88,6 +90,7 @@ var svg = d3.select("#main-content").append("svg")
 .style("height", height)
 .append("g").attr("transform", "translate(0, 0)").call(zoom);
 
-var container = svg.append("g").attr("id", "main-container").on("click", internalClickHandler);
+var container = svg.append("g").attr("id", "main-container")
+                               .on("click", internalClickHandler);
 container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
 });
