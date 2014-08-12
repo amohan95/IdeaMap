@@ -65,14 +65,15 @@ blockquote::before {
 	pointer-events: all;
 }
 
-.dragging {
+.dragging:first-child {
 	stroke: red;
 	stroke-width: 5;
 	fill: blue;
 }
 
-.selected {
+.selected circle {
 	stroke: blue;
+	stroke-dasharray: 8;
 	fill: red;
 }
 

@@ -20,9 +20,15 @@
  var eventStack = [];
 
  $('#page-home').live('pageinit', function(event) {
+  var availWidth = screen.availWidth;
+  var availHeight = screen.availHeight * .6;
+
+  var width = screen.availWidth * 3;
+  var height = screen.availHeight * 3;
+  
   var mainContent = $("#main-content");
   mainContent.css("width", "100%");
-  mainContent.css("height", screen.availHeight * .6 + "px");
+  mainContent.css("height", availHeight + "px");
 
   var selectedElement = null;
 
@@ -32,8 +38,8 @@
 
   var drag = d3.behavior.drag()
   .origin(function() {
-    var t = d3.select(this);
-    return {x: t.attr("cx"), y: t.attr("cy")};
+    var el = d3.select(this);
+    return {"x" : el.attr("x"), "y" : el.attr("y")};
   })
   .on("dragstart", dragstarted)
   .on("drag", dragged)
@@ -56,9 +62,14 @@
    }
    else {
     var location = d3.mouse(this);
-    container.append("circle").attr("cx", location[0]).attr("cy", location[1])
-    .attr("r", 10).attr("stroke", "black").attr("stroke-width", 3)
-    .attr("fill", "green").call(drag).on("click", elementClickHandler);
+    var x = location[0];
+    var y = location[1];
+    container.append("g").call(drag).on("click", elementClickHandler)
+                                    .attr("x", x).attr("y", y)
+                                    .attr("transform", "translate(" + x + "," + y + ")")
+                         .append("circle")
+                         .attr("r", 10).attr("stroke", "black").attr("stroke-width", 1)
+                         .attr("fill", "green");
   }
 };
 
@@ -73,8 +84,11 @@ function dragstarted(d) {
 
 function dragged() {
   var el = d3.select(this);
-  el.attr("cx", d3.event.x);
-  el.attr("cy", d3.event.y);
+  var x = d3.event.x < 0 ? 0 : (d3.event.x > width ? width : d3.event.x);
+  var y = d3.event.y < 0 ? 0 : (d3.event.y > height ? height : d3.event.y);
+  el.attr("x", x);
+  el.attr("y", y);
+  el.attr("transform", "translate(" + x + "," + y + ")");
 }
 
 function dragended(d) {
@@ -82,8 +96,6 @@ function dragended(d) {
   d3.select(this).classed("dragging", false);
 }
 
-var width = screen.availWidth * 3;
-var height = screen.availHeight * 3;
 var svg = d3.select("#main-content").append("svg")
 .attr("id", "main-svg")
 .style("width", width)
