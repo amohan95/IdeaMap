@@ -41,7 +41,7 @@ function initSVG(width, height) {
             var updatedNode = graph.getNode(this);
             var updatedSelection = d3.select(this).classed("selected", true);
             if(prevNode.getConnection(this) === null){
-              var line = container.append("line")
+              var line = container.insert("line", "#bounding-rect")
                           .style("stroke", "black")
                           .attr("x1", selectedElement.attr("x"))
                           .attr("y1", selectedElement.attr("y"))
@@ -71,7 +71,7 @@ function initSVG(width, height) {
       if(d3.event.toElement.id === "bounding-rect"){
          selectedElement.classed("selected", false);
          selectedElement = null;
-         $("#selected-options").fadeOut();
+         $("#selected-options").fadeOut("fast");
       }
     }
     else {
@@ -79,8 +79,9 @@ function initSVG(width, height) {
       var x = location[0];
       var y = location[1];
       var element = container.append("g").call(drag).on("click", elementClickHandler)
-        .attr("x", x).attr("y", y).attr("data-scale", 1)
-        .attr("transform", "translate(" + x + "," + y + ") scale(1)");
+        .attr("x", x).attr("y", y).attr("data-scale", 3)
+        .attr("transform", "translate(" + x + "," + y + ") scale(3)")
+        .classed("node", true);
 
       graph.addNode(new GraphNode(element[0][0], element));
 
@@ -168,7 +169,7 @@ function initButtonHandlers() {
     if(selectedElement !== null) {
       selectedElement.remove();
       selectedElement = null;
-      $("#selected-options").fadeOut();
+      $("#selected-options").fadeOut("fast");
     }
   });
 }
