@@ -21,19 +21,26 @@
 
 <body onload="init();">
 	<div data-role="page" id="page-home" class="type-interior" data-theme="a">
-		<div data-role="header" data-theme="a">
+		<div data-role="header" data-theme="a" data-position="fixed" id="header">
 			<a href="#" data-icon="plus" data-iconpos="notext" id="new-map" class="ui-btn-left">new map</a>
-			<h1>Idea Map</h1>
+			<h1></h1>
 			<a href="#" data-icon="bullets" data-iconpos="notext" id="list-maps" class="ui-btn-right">list maps</a>
 		</div>
 		<div id="main-content" data-theme="a"></div>
-		<div data-role="footer">
-			<div data-role="controlgroup" data-type="horizontal" style="text-align:center;">
-				<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-star">Icon</a>
-				<a href="#" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-plus">Zoom In</a>
-				<a href="#" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-minus">Zoom Out</a>
-				<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-back">Undo</a>
-			</div>
+		<div data-role="footer" data-position="fixed" id="footer">
+			<div style="text-align:center;">
+				<div id="default-options" style="display:inline-block;">
+					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-star">Icon</a>
+					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-back">Undo</a>
+				</div>
+				<div id="selected-options" style="display:none;">
+					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-edit">Edit</a>
+					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-arrow-d-r">Link</a>
+					<a href="#" id="increase-size" class="scale-change ui-btn ui-corner-all ui-btn-icon-notext ui-icon-plus"></a>
+					<a href="#" id="decrease-size" class="scale-change ui-btn ui-corner-all ui-btn-icon-notext ui-icon-minus"></a>
+					<a href="#" id="remove-element" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-delete"></a>
+				</div>
+			</div>		
 		</div>
 	</div>
 	<script type="text/javascript" charset="utf-8" src="apis/device.js"></script>

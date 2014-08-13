@@ -77,6 +77,12 @@ blockquote::before {
 	fill: red;
 }
 
+#selected-options {
+	margin-left: 10px;
+	padding-left: 15px;
+	border-left: 1px dashed #000000;
+}
+
 @media all and (min-width: 500px) and (orientation:landscape),
 				(min-width: 800px) and (orientation:portrait)
 				{

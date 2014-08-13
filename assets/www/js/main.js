@@ -18,22 +18,24 @@
  */
 
  var eventStack = [];
-
+ var selectedElement = null;
  $('#page-home').live('pageinit', function(event) {
   var availWidth = screen.availWidth;
-  var availHeight = screen.availHeight * .6;
+  var availHeight = screen.availHeight - $("#header").height() - $("#footer").height();
 
   var width = screen.availWidth * 3;
-  var height = screen.availHeight * 3;
+  var height = availHeight * 3;
   
   var mainContent = $("#main-content");
   mainContent.css("width", "100%");
   mainContent.css("height", availHeight + "px");
+  initSVG(width, height);
+  initButtonHandlers();
+});
 
-  var selectedElement = null;
-
+function initSVG(width, height) {
   var zoom = d3.behavior.zoom()
-  .scaleExtent([.15, 10])
+  .scaleExtent([.25, 10])
   .on("zoom", zoomed);
 
   var drag = d3.behavior.drag()
@@ -48,6 +50,14 @@
   var elementClickHandler = function() {
     if(d3.event.defaultPrevented) return;
     if(selectedElement !== null) selectedElement.classed("selected", false);
+    else {
+      $("#selected-options").css({
+        display: 'inline-block',
+        opacity:0
+      }).animate({
+        opacity: 1
+      });
+    }
     selectedElement = d3.select(this);
     selectedElement.classed("selected", true);
   };
@@ -58,6 +68,7 @@
      if(d3.event.toElement.id === "bounding-rect"){
        selectedElement.classed("selected", false);
        selectedElement = null;
+       $("#selected-options").fadeOut();
      }
    }
    else {
@@ -65,11 +76,11 @@
     var x = location[0];
     var y = location[1];
     container.append("g").call(drag).on("click", elementClickHandler)
-                                    .attr("x", x).attr("y", y)
-                                    .attr("transform", "translate(" + x + "," + y + ")")
-                         .append("circle")
-                         .attr("r", 10).attr("stroke", "black").attr("stroke-width", 1)
-                         .attr("fill", "green");
+    .attr("x", x).attr("y", y).attr("data-scale", 1)
+    .attr("transform", "translate(" + x + "," + y + ") scale(1)")
+    .append("circle")
+    .attr("r", 10).attr("stroke", "black").attr("stroke-width", 1)
+    .attr("fill", "green");
   }
 };
 
@@ -88,7 +99,8 @@ function dragged() {
   var y = d3.event.y < 0 ? 0 : (d3.event.y > height ? height : d3.event.y);
   el.attr("x", x);
   el.attr("y", y);
-  el.attr("transform", "translate(" + x + "," + y + ")");
+  var scale = el.attr("data-scale");
+  el.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ")");
 }
 
 function dragended(d) {
@@ -103,6 +115,26 @@ var svg = d3.select("#main-content").append("svg")
 .append("g").attr("transform", "translate(0, 0)").call(zoom);
 
 var container = svg.append("g").attr("id", "main-container")
-                               .on("click", internalClickHandler);
+.on("click", internalClickHandler);
 container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
-});
+}
+
+function initButtonHandlers() {
+  $(".scale-change").click(function(){
+    if(selectedElement !== null) {
+      var scale = parseInt(selectedElement.attr("data-scale"));
+      if(this.id === "decrease-size") scale = Math.max(scale - 1, 1);
+      else scale++;
+      selectedElement.attr("data-scale", scale);
+      selectedElement.attr("transform", selectedElement.attr("transform").split(" ")[0] + " scale(" + scale + ")");
+    }
+  });
+
+  $("#remove-element").click(function(){
+    if(selectedElement !== null) {
+      selectedElement.remove();
+      selectedElement = null;
+      $("#selected-options").fadeOut();
+    }
+  });
+}
