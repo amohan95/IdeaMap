@@ -37,16 +37,18 @@ function initSVG(width, height) {
     if(selectedElement !== null) {
         if(selectedElement[0][0] !== this){
             selectedElement.classed("selected", false);
+            var prevNode = graph.getNode(selectedElement[0][0]);
+            var updatedNode = graph.getNode(this);
             var updatedSelection = d3.select(this).classed("selected", true);
-            var node = graph.getNode(selectedElement[0][0]);
-            if(node.getConnection(this) === null){
+            if(prevNode.getConnection(this) === null){
               var line = container.append("line")
                           .style("stroke", "black")
                           .attr("x1", selectedElement.attr("x"))
                           .attr("y1", selectedElement.attr("y"))
                           .attr("x2", updatedSelection.attr("x"))
                           .attr("y2", updatedSelection.attr("y"));
-              node.addConnection(this, line);
+              prevNode.addConnection(this, line, false);
+              updatedNode.addConnection(selectedElement[0][0], line, true);
             }
             selectedElement = updatedSelection;
         }
@@ -61,7 +63,6 @@ function initSVG(width, height) {
         selectedElement = d3.select(this);
         selectedElement.classed("selected", true);
     }
-    console.log(graph.getNode(selectedElement[0][0]));
   };
 
   var internalClickHandler = function() {
@@ -82,7 +83,6 @@ function initSVG(width, height) {
         .attr("transform", "translate(" + x + "," + y + ") scale(1)");
 
       graph.addNode(new GraphNode(element[0][0], element));
-      console.log(graph);
 
       element
         .append("circle")
@@ -115,12 +115,15 @@ function initSVG(width, height) {
 }
 
 function zoomed() {
-  d3.select("#main-container").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  d3.select("#main-container").attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
 }
 
 var currentlyDragged;
+var connections;
 function dragstarted(d) {
   d3.event.sourceEvent.stopPropagation();
+  currentlyDragged = graph.getNode(this);
+  connections = currentlyDragged.connectedElements;
   d3.select(this).classed("dragging", true);
 }
 
@@ -132,6 +135,17 @@ function dragged() {
   el.attr("y", y);
   var scale = el.attr("data-scale");
   el.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ")");
+  for(var i = 0; i < connections.length; i++) {
+    var connection = connections[i].connection;
+    if(connections[i].start) {
+      connection.attr("x2", x);
+      connection.attr("y2", y);
+    }
+    else {
+      connection.attr("x1", x);
+      connection.attr("y1", y);
+    }
+  }
 }
 
 function dragended(d) {
@@ -179,8 +193,8 @@ function Graph() {
 function GraphNode(element){
     this.connectedElements = [];
     this.element = element;
-    this.addConnection = function(other, connection) {
-        this.connectedElements.push({"other" : other, "connection" : connection});
+    this.addConnection = function(other, connection, start) { // start -> if x1y1 or x2y2
+        this.connectedElements.push({"other" : other, "connection" : connection, "start" : start});
     }
     this.removeConnection = function(other) {
         for(var i = this.connectedElements.length - 1; i >= 0; i--) {
