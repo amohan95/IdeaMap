@@ -3,6 +3,7 @@ var graph = new Graph();
 var selectedElement = null;
 var width;
 var height;
+var elementIdCounter = 0;
 
 $('#page-home').live('pageinit', function(event) {
   var availWidth = screen.availWidth;
@@ -20,7 +21,7 @@ $('#page-home').live('pageinit', function(event) {
 
 function initSVG(width, height) {
   var zoom = d3.behavior.zoom()
-    .scaleExtent([.25, 10])
+    .scaleExtent([.15, 10])
     .on("zoom", zoomed);
 
   var drag = d3.behavior.drag()
@@ -46,7 +47,8 @@ function initSVG(width, height) {
                           .attr("x1", selectedElement.attr("x"))
                           .attr("y1", selectedElement.attr("y"))
                           .attr("x2", updatedSelection.attr("x"))
-                          .attr("y2", updatedSelection.attr("y"));
+                          .attr("y2", updatedSelection.attr("y"))
+                          .attr("marker-end", "url(#arrowhead)");
               prevNode.addConnection(this, line, false);
               updatedNode.addConnection(selectedElement[0][0], line, true);
             }
@@ -55,7 +57,7 @@ function initSVG(width, height) {
     }
     else {
         $("#selected-options").css({
-        display: 'inline-block',
+          display: 'inline-block',
             opacity:0
         }).animate({
             opacity: 1
@@ -81,10 +83,10 @@ function initSVG(width, height) {
       var element = container.append("g").call(drag).on("click", elementClickHandler)
         .attr("x", x).attr("y", y).attr("data-scale", 3)
         .attr("transform", "translate(" + x + "," + y + ") scale(3)")
+        .attr("id", "el-" + elementIdCounter++)
         .classed("node", true);
 
-      graph.addNode(new GraphNode(element[0][0], element));
-
+      graph.addNode(new GraphNode(element[0][0]));
       element
         .append("circle")
         .attr("r", 10).attr("stroke", "black").attr("stroke-width", 1)
@@ -100,14 +102,13 @@ function initSVG(width, height) {
 
   d3.select("#main-svg").append("defs").append("marker")
                                         .attr("id", "arrowhead")
-                                        .attr("viewbox", "0 -5 10 10")
-                                        .attr("refX", 18)
-                                        .attr("refY", 0)
-                                        .attr("markerWidth", 6)
-                                        .attr("markerHeight", 4)
+                                        .attr("refX", 4)
+                                        .attr("refY", 4)
+                                        .attr("markerWidth", 12)
+                                        .attr("markerHeight", 8)
                                         .attr("orient", "auto")
                                         .append("path")
-                                            .attr("d", "M0,-5L10,0L0,5Z");
+                                            .attr("d", "M 0,0 V 8 L12,4 Z");
 
   var container = svg.append("g").attr("id", "main-container")
     .on("click", internalClickHandler);
@@ -138,7 +139,7 @@ function dragged() {
   el.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ")");
   for(var i = 0; i < connections.length; i++) {
     var connection = connections[i].connection;
-    if(connections[i].start) {
+    if(connections[i].isOrigin) {
       connection.attr("x2", x);
       connection.attr("y2", y);
     }
@@ -194,8 +195,8 @@ function Graph() {
 function GraphNode(element){
     this.connectedElements = [];
     this.element = element;
-    this.addConnection = function(other, connection, start) { // start -> if x1y1 or x2y2
-        this.connectedElements.push({"other" : other, "connection" : connection, "start" : start});
+    this.addConnection = function(other, connection, isOrigin) { // origin -> if x1y1 or x2y2
+        this.connectedElements.push({"other" : other, "connection" : connection, "isOrigin" : isOrigin});
     }
     this.removeConnection = function(other) {
         for(var i = this.connectedElements.length - 1; i >= 0; i--) {
