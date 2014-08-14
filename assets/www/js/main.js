@@ -38,10 +38,10 @@ function initSVG(width, height) {
     if(selectedElement !== null) {
         if(selectedElement[0][0] !== this){
             selectedElement.classed("selected", false);
-            var prevNode = graph.getNode(selectedElement[0][0]);
-            var updatedNode = graph.getNode(this);
+            var prevNode = graph.getNode(selectedElement.attr("id"));
+            var updatedNode = graph.getNode(this.id);
             var updatedSelection = d3.select(this).classed("selected", true);
-            if(prevNode.getConnection(this) === null){
+            if(prevNode.getConnection(this.id) === null){
               var line = container.insert("line", "#bounding-rect")
                           .style("stroke", "black")
                           .attr("x1", selectedElement.attr("x"))
@@ -49,8 +49,8 @@ function initSVG(width, height) {
                           .attr("x2", updatedSelection.attr("x"))
                           .attr("y2", updatedSelection.attr("y"))
                           .attr("marker-end", "url(#arrowhead)");
-              prevNode.addConnection(this, line, false);
-              updatedNode.addConnection(selectedElement[0][0], line, true);
+              prevNode.addConnection(this.id, line, false);
+              updatedNode.addConnection(selectedElement.attr("id"), line, true);
             }
             selectedElement = updatedSelection;
         }
@@ -86,7 +86,7 @@ function initSVG(width, height) {
         .attr("id", "el-" + elementIdCounter++)
         .classed("node", true);
 
-      graph.addNode(new GraphNode(element[0][0]));
+      graph.addNode(new GraphNode(element.attr("id")));
       element
         .append("circle")
         .attr("r", 10).attr("stroke", "black").attr("stroke-width", 1)
@@ -124,7 +124,7 @@ var currentlyDragged;
 var connections;
 function dragstarted(d) {
   d3.event.sourceEvent.stopPropagation();
-  currentlyDragged = graph.getNode(this);
+  currentlyDragged = graph.getNode(this.id);
   connections = currentlyDragged.connectedElements;
   d3.select(this).classed("dragging", true);
 }
@@ -180,32 +180,32 @@ function Graph() {
     this.addNode = function(node) {
         this.nodes.push(node);
     }
-    this.removeNode = function(element) {
+    this.removeNode = function(elementId) {
         for(var i = this.nodes.length; i >= 0; i--) {
-            if(this.nodes[i].element === element) return this.nodes.splice(i, 1);
+            if(this.nodes[i].elementId === elementId) return this.nodes.splice(i, 1);
         }
     }
-    this.getNode = function(element) {
+    this.getNode = function(elementId) {
         for(var i = 0; i < this.nodes.length; i++) {
-            if(this.nodes[i].element === element) return this.nodes[i];
+            if(this.nodes[i].elementId === elementId) return this.nodes[i];
         }
     }
 }
 
-function GraphNode(element){
+function GraphNode(elementId){
     this.connectedElements = [];
-    this.element = element;
-    this.addConnection = function(other, connection, isOrigin) { // origin -> if x1y1 or x2y2
-        this.connectedElements.push({"other" : other, "connection" : connection, "isOrigin" : isOrigin});
+    this.elementId = elementId;
+    this.addConnection = function(otherId, connection, isOrigin) { // origin -> if x1y1 or x2y2
+        this.connectedElements.push({"otherId" : otherId, "connection" : connection, "isOrigin" : isOrigin});
     }
-    this.removeConnection = function(other) {
+    this.removeConnection = function(otherId) {
         for(var i = this.connectedElements.length - 1; i >= 0; i--) {
-            if(this.connectedElements[i].other === other) return this.connectedElements.splice(i, 1);
+            if(this.connectedElements[i].otherId === otherId) return this.connectedElements.splice(i, 1);
         }
     }
-    this.getConnection = function(other) {
+    this.getConnection = function(otherId) {
         for(var i = 0; i < this.connectedElements.length; i++) {
-            if(this.connectedElements[i].other === other) return this.connectedElements[i];
+            if(this.connectedElements[i].otherId === otherId) return this.connectedElements[i];
         }
         return null;
     }
