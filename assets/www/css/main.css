@@ -65,6 +65,11 @@ blockquote::before {
 	pointer-events: all;
 }
 
+.connection {
+	stroke: black;
+	stroke-width: 3px;
+}
+
 .dragging :first-child {
 	stroke: red;
 	fill-opacity: .5;
