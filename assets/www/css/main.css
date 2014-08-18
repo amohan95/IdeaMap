@@ -57,6 +57,15 @@ blockquote::before {
 	overflow: hidden;
 }
 
+#idea-name-wrapper div {
+	margin: 5px auto;
+	width: 50%;
+}
+
+#idea-name {
+	text-align: center;
+}
+
 #bounding-rect {
 	fill: none;
 	stroke: gray;
@@ -70,17 +79,26 @@ blockquote::before {
 	stroke-width: 3px;
 }
 
-.dragging :first-child {
+.dragging > :first-child {
 	stroke: red;
 	fill-opacity: .5;
 }
 
-.node {
-	stroke: #fff;
-	stroke-width: 10px;
+.node-text {
+	text-anchor: middle;
+	text-shadow:none;
+	stroke-dasharray:none;
 }
 
-.selected :first-child {
+.node-title {
+	font-size: 6px;
+}
+
+.node-description {
+	font-size: 4px;
+}
+
+.selected > :first-child {
 	stroke: blue;
 	stroke-dasharray: 3;
 	fill: red;

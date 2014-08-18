@@ -32,8 +32,8 @@ var onDeviceReady = function() {
     document.addEventListener("resume", onEventFired, false);
     document.addEventListener("online", onEventFired, false);
     document.addEventListener("offline", onEventFired, false);
-    // using callback for backbutton event may interfere with normal behavior
-    document.addEventListener("backbutton", onBackbutton, false);
+    using callback for backbutton event may interfere with normal behavior
+   document.addEventListener("backbutton", onBackbutton, false);
     document.addEventListener("batterycritical", onEventFired, false);
     document.addEventListener("batterylow", onEventFired, false);
     document.addEventListener("batterystatus", onEventFired, false);
@@ -43,8 +43,8 @@ var onDeviceReady = function() {
     document.addEventListener("volumeupbutton", onEventFired, false);
     
     // api-camera  Photo URI
-    pictureSource=navigator.camera.PictureSourceType;
-    destinationType=navigator.camera.DestinationType;
+//    pictureSource=navigator.camera.PictureSourceType;
+//    destinationType=navigator.camera.DestinationType;
        
     // The Samsung Galaxy Tab 10.1 is currently the only device known to
     // support orientation/change correctly and reliably.

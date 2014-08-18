@@ -1,29 +1,31 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
-<title>Idea Map</title>
+	<meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+	<title>Idea Map</title>
 
-<link rel="stylesheet" href="jquery.mobile/jquery.mobile-1.4.3.min.css" />
-<link rel="stylesheet" href="css/main.css" />
+	<link rel="stylesheet" href="jquery.mobile/jquery.mobile-1.4.3.min.css" />
+	<link rel="stylesheet" href="css/main.css" />
 
-<script src="jquery.mobile/jquery-1.7.2.min"></script>
-<script src="jquery.mobile/jquery.mobile-1.4.3.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="js/d3.js"></script>
-<script type="text/javascript" charset="utf-8" src="cordova-1.9.0.js"></script>
-<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+	<script type="text/javascript" charset="utf-8" src="cordova-1.9.0.js"></script>
+	<script src="jquery.mobile/jquery-1.7.2.min"></script>
+	<script src="jquery.mobile/jquery.mobile-1.4.3.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/d3.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 
-<!-- <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>-->
-<!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />-->
-<!-- <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>-->
+	<!-- <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>-->
+	<!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />-->
+	<!-- <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>-->
 </head>
 
 <body onload="init();">
-	<div data-role="page" id="page-home" class="type-interior" data-theme="a">
+	<div data-role="page" id="svg-page" class="type-interior" data-theme="a">
 		<div data-role="header" data-theme="a" data-position="fixed" data-tap-toggle="false" id="header">
 			<a href="#" data-icon="plus" data-iconpos="notext" id="new-map" class="ui-btn-left">new map</a>
-			<h1></h1>
-			<a href="#" data-icon="bullets" data-iconpos="notext" id="list-maps" class="ui-btn-right">list maps</a>
+			<div id="idea-name-wrapper">
+				<input type="text" maxlength="35" name="idea-name" id="idea-name" placeholder="Idea Name" data-mini="true">
+			</div>
+			<a href="#list-page" data-transition="slide" data-icon="bullets" data-iconpos="notext" id="list-maps" class="ui-btn-right">list maps</a>
 		</div>
 		<div id="main-content" data-theme="a"></div>
 		<div data-role="footer" data-position="fixed" data-tap-toggle="false" id="footer">
@@ -33,15 +35,36 @@
 					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-back">Undo</a>
 				</div>
 				<div id="selected-options" style="display:none;">
-					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-edit">Edit</a>
+					<a href="#edit-page" id="edit-node" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-edit">Edit</a>
 					<a href="#" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-arrow-d-r">Link</a>
 					<a href="#" id="increase-size" class="scale-change ui-btn ui-corner-all ui-btn-icon-notext ui-icon-plus"></a>
 					<a href="#" id="decrease-size" class="scale-change ui-btn ui-corner-all ui-btn-icon-notext ui-icon-minus"></a>
-					<a href="#" id="remove-element" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-delete"></a>
+					<a href="#" id="remove-node" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-delete"></a>
 				</div>
 			</div>		
 		</div>
 	</div>
-	<script type="text/javascript" charset="utf-8" src="apis/device.js"></script>
+	<div data-role="page" id="list-page" class="type-interior" data-theme="a">
+		<div>FOOBAR</div>
+	</div>
+	<div data-role="dialog" data-rel="dialog" id="edit-page" class="type-interior" data-theme="a">
+		<div data-role="header">
+		</div>
+		<div role="main" class="ui-content">
+			<h2 style="text-align:center;font-size:24px;">Edit Element</h2>
+			<form>
+				<input type="text" maxlength="25" name="node-title" id="node-title" placeholder="Title" data-mini="true">
+				<textarea maxlength="100" name="node-description" id="node-description" placeholder="Description" data-mini="true"></textarea>
+			</form>
+			<div style="width:100%;text-align:center;">
+				<svg id="edit-svg" width="450px" height="450px"></svg>
+			</div>
+			<div style="width:100%;text-align:center;">
+				<a id="confirm-edit" href="#svg-page" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-check ui-btn-icon-left" data-transition="pop" data-direction="reverse">Confirm</a>
+				<a id="cancel-edit" href="#svg-page" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-delete ui-btn-icon-left" data-transition="pop" data-direction="reverse">Cancel</a>
+			</div>
+		</div>
+		<div data-role="footer"></div>
+	</div>
 </body>
 </html>
