@@ -80,7 +80,6 @@ blockquote::before {
 }
 
 .dragging > :first-child {
-	stroke: red;
 	fill-opacity: .5;
 }
 
@@ -99,9 +98,7 @@ blockquote::before {
 }
 
 .selected > :first-child {
-	stroke: blue;
 	stroke-dasharray: 3;
-	fill: red;
 }
 
 #selected-options {

@@ -213,7 +213,7 @@ function removeConnection(originNode, toNode, store) {
       element
       .append("circle")
       .attr("r", 30).attr("stroke", "black").attr("stroke-width", 1)
-      .attr("fill", "green");
+      .attr("fill", "#00FF00");
       var textarea = element.append("text").classed("node-text", true).attr("dy", -10)
       textarea.append("tspan").classed("node-title", true);
       textarea.append("tspan").classed("node-description", true).attr("x", 0).attr("dy", 5);
@@ -329,6 +329,7 @@ function bindEvents() {
 
       $("#node-title").val($("#editable-node .node-title").html());
       $("#node-description").val($("#editable-node .node-description").html());
+      $("#node-color").val($("#editable-node > :first-child").attr("fill"));
     }
   });
 
@@ -359,6 +360,20 @@ function bindEvents() {
   $("#node-description").on("input", function(){
     var val = $(this).val();
     $("#editable-node .node-description").html(val);
+  });
+
+  $("#node-color").on("input", function(){
+    var val = $(this).val();
+    $("#editable-node > :first-child").attr("fill", val);
+  });
+
+  $("#confirm-edit").click(function(){
+    var replacement = $($("#editable-node").html());
+    replacement.attr("id", replacement.attr("data-id"));
+    var selected = $(".selected");
+    selected.empty();
+    selected.append(replacement);
+    selected.html(selected.html());
   });
 }
 
@@ -404,7 +419,7 @@ function init() {
 * End Page Init Functions
 ***/
 
-/***
+/**
 * Random Functions
 ***/
 
