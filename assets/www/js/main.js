@@ -406,6 +406,7 @@ function bindEvents() {
     $("#idea-name").text(graphName);
     d3.select("#main-container").append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
     $.mobile.changePage($("#svg-page"), {transition: "slide"});
+    graph = new Graph();
     storeLocalChanges();
     populateList();
   });
@@ -432,7 +433,7 @@ function bindEvents() {
       $("#confirm-name").removeAttr("disabled");
       var found = false;
       for(var i = 0;i < window.localStorage.length;i++){
-        if(val == window.localStorage.key(i)){
+        if(val === window.localStorage.key(i) && val !== graphName){
           found = true;
           $("#replace-warning").fadeIn();
           break;  
@@ -444,12 +445,15 @@ function bindEvents() {
 
   $("#confirm-name").click(function(){
     var newKey = $("#idea-name-edit").val();
-    window.localStorage[newKey] = window.localStorage[graphName];
-    delete window.localStorage[graphName];
-    graphName = newKey;
+    if(newKey !== graphName){
+      window.localStorage[newKey] = window.localStorage[graphName];
+      delete window.localStorage[graphName];
+      graphName = newKey;
+      $("#idea-name").text(graphName);
+      populateList();
+    }
+    $("#replace-warning").fadeOut();
     $("#idea-name-popup").popup("close");
-    $("#idea-name").text(graphName);
-    populateList();
   });
 }
 
