@@ -289,12 +289,6 @@ function initSVG(width, height) {
 
   var container = svg.append("g").attr("id", "main-container")
   .on("click", internalClickHandler);
-  // if(window.localStorage.graph !== undefined) {
-  //   initFromStorage();
-  // }
-  // else {
-  //   container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
-  // }
 }
 
 /***
@@ -413,6 +407,15 @@ function bindEvents() {
     d3.select("#main-container").append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
     $.mobile.changePage($("#svg-page"), {transition: "slide"});
     storeLocalChanges();
+    populateList();
+  });
+
+  $("#confirm-delete").click(function(){
+    var popup = $("#delete-map-popup");
+    var key = popup.attr("data-graph");
+    delete window.localStorage[key];
+    populateList();
+    popup.popup("close");
   });
 
   $("#idea-name-change").click(function(){
@@ -422,11 +425,12 @@ function bindEvents() {
 
 function populateList() {
   var list = $("#graph-list");
+  $(".graph-list-item").parent().remove();
   for(var i = 0;i < localStorage.length;i++){
     var key = localStorage.key(i);
     var listItem = $('<li>' +
                           '<a class="graph-list-item">' + key + '</a>' +
-                          '<a href="#" data-rel="popup" data-position-to="window" data-transition="pop"></a>' +
+                          '<a href="#delete-map-popup" data-graph="' + key + '" class="delete-list-item" data-rel="popup" data-position-to="window" data-transition="pop"></a>' +
                       '</li>');
     list.prepend(listItem);
   }
@@ -438,6 +442,12 @@ function populateList() {
     $("#idea-name").text(graphName);
     $.mobile.changePage($("#svg-page"), {transition: "slide"});
     initFromStorage();
+  });
+
+  $(".delete-list-item").click(function(){
+    var key = $(this).attr("data-graph");
+    $("#delete-map-name").text(key);
+    $("#delete-map-popup").attr("data-graph", key);
   });
 }
 
