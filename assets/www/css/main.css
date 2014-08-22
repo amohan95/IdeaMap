@@ -51,6 +51,14 @@ blockquote::before {
 	text-shadow: none;
 }
 
+.ui-icon-delete:after {
+	background-color:red;
+}
+
+.ui-icon-check:after {
+	background-color:green;
+}
+
 .h2-header {
 	text-align:center;
 	font-size:24px;

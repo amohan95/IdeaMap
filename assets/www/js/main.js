@@ -419,7 +419,37 @@ function bindEvents() {
   });
 
   $("#idea-name-change").click(function(){
-    
+    var name = $("#idea-name").text();
+    $("#idea-name-edit").val(name);
+  });
+
+  $("#idea-name-edit").on("input", function(){
+    var val = $(this).val();
+    if(!val){
+      $("#confirm-name").attr("disabled", "disabled");
+    }
+    else {
+      $("#confirm-name").removeAttr("disabled");
+      var found = false;
+      for(var i = 0;i < window.localStorage.length;i++){
+        if(val == window.localStorage.key(i)){
+          found = true;
+          $("#replace-warning").fadeIn();
+          break;  
+        }
+      }
+      if(found === false) $("#replace-warning").fadeOut(); 
+    }
+  });
+
+  $("#confirm-name").click(function(){
+    var newKey = $("#idea-name-edit").val();
+    window.localStorage[newKey] = window.localStorage[graphName];
+    delete window.localStorage[graphName];
+    graphName = newKey;
+    $("#idea-name-popup").popup("close");
+    $("#idea-name").text(graphName);
+    populateList();
   });
 }
 
@@ -435,6 +465,7 @@ function populateList() {
     list.prepend(listItem);
   }
   list.listview("refresh");
+
   $(".graph-list-item").click(function(){
     graphName = $(this).text();
     var mainContainer = $("#main-container");
