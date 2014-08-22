@@ -6,6 +6,7 @@ var eventStack = [];
 var graph = new Graph();
 var selectedElement = null;
 var elementIdCounter = 0;
+var graphName;
 var width;
 var height;
 
@@ -18,20 +19,25 @@ var height;
 ***/
 
 function storeLocalChanges() {
-  window.localStorage.setItem("graph", JSON.stringify(graph, function(key, value){
+  var storageObject = new Object();
+  storageObject.elementIdCounter = elementIdCounter;
+  storageObject.graph = JSON.stringify(graph, function(key, value){
     if(key === "connection") {
       return value[0][0].outerHTML;
     }
     else {
       return value;
     }
-  }));
-  window.localStorage.setItem("elementIdCounter", elementIdCounter);
-  window.localStorage.setItem("svg", $("#main-container").html());
+  });
+  storageObject.svg = $("#main-container").html();
+  window.localStorage[graphName] = JSON.stringify(storageObject);
 }
 
 function initFromStorage() {
-  var tmpGraph = JSON.parse(window.localStorage.graph);
+  selectedElement = null;
+  var storageObject = JSON.parse(window.localStorage[graphName]);
+  var tmpGraph = JSON.parse(storageObject.graph);
+  graph = new Graph();
   for(var i = 0; i < tmpGraph.nodes.length; i++) {
     var tmpNode = tmpGraph.nodes[i];
     var node = new GraphNode(tmpNode.elementId);
@@ -42,10 +48,10 @@ function initFromStorage() {
     }
     graph.addNode(node);
   }
-  elementIdCounter = window.localStorage.elementIdCounter;
+  elementIdCounter = storageObject.elementIdCounter;
   var mainContainer = $("#main-container");
   mainContainer.empty();
-  var jQuerySvg = $(window.localStorage.svg);
+  var jQuerySvg = $(storageObject.svg);
   mainContainer.append(jQuerySvg);
   mainContainer.html(mainContainer.html());
   $("#main-container line").each(function(k, v){
@@ -283,12 +289,12 @@ function initSVG(width, height) {
 
   var container = svg.append("g").attr("id", "main-container")
   .on("click", internalClickHandler);
-  if(window.localStorage.graph !== undefined) {
-    initFromStorage();
-  }
-  else {
-    container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
-  }
+  // if(window.localStorage.graph !== undefined) {
+  //   initFromStorage();
+  // }
+  // else {
+  //   container.append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
+  // }
 }
 
 /***
@@ -300,7 +306,7 @@ function initSVG(width, height) {
 ***/
 
 function bindEvents() {
-  $("#new-map").click(function(){
+  $("#clear-map").click(function(){
     graph = new Graph();
     elementIdCounter = 0;
     $("#main-container g").remove();
@@ -375,6 +381,64 @@ function bindEvents() {
     selected.append(replacement);
     selected.html(selected.html());
   });
+
+  $("#initial-name-edit").on("input", function(){
+    var val = $(this).val();
+    if(!val){
+      $("#initial-confirm-name").attr("disabled", "disabled");
+    }
+    else {
+      $("#initial-confirm-name").removeAttr("disabled");
+      var found = false;
+      for(var i = 0;i < window.localStorage.length;i++){
+        if(val == window.localStorage.key(i)){
+          found = true;
+          $("#initial-replace-warning").fadeIn();
+          break;  
+        }
+      }
+      if(found === false) $("#initial-replace-warning").fadeOut(); 
+    }
+  });
+
+  $("#initial-confirm-name").click(function(){
+    graphName = $("#initial-name-edit").val();
+    $("#initial-name-edit").val("");
+    $(this).attr("disabled", "disabled");
+    $("#initial-replace-warning").fadeOut();
+
+    var mainContainer = $("#main-container");
+    mainContainer.empty();
+    $("#idea-name").text(graphName);
+    d3.select("#main-container").append("rect").attr("width", width).attr("height", height).attr("id", "bounding-rect");
+    $.mobile.changePage($("#svg-page"), {transition: "slide"});
+    storeLocalChanges();
+  });
+
+  $("#idea-name-change").click(function(){
+    
+  });
+}
+
+function populateList() {
+  var list = $("#graph-list");
+  for(var i = 0;i < localStorage.length;i++){
+    var key = localStorage.key(i);
+    var listItem = $('<li>' +
+                          '<a class="graph-list-item">' + key + '</a>' +
+                          '<a href="#" data-rel="popup" data-position-to="window" data-transition="pop"></a>' +
+                      '</li>');
+    list.prepend(listItem);
+  }
+  list.listview("refresh");
+  $(".graph-list-item").click(function(){
+    graphName = $(this).text();
+    var mainContainer = $("#main-container");
+    mainContainer.empty();
+    $("#idea-name").text(graphName);
+    $.mobile.changePage($("#svg-page"), {transition: "slide"});
+    initFromStorage();
+  });
 }
 
 /***
@@ -385,13 +449,15 @@ function bindEvents() {
 * Page Init Functions
 ***/
 
-$('#svg-page').live('pageinit', function(event) {
+$('#list-page').live('pageinit', function(event) {
   var availWidth = screen.availWidth;
   var availHeight = screen.availHeight - $("#header").height() - $("#footer").height();
 
   width = availWidth * 3;
   height = availHeight * 3;
-  
+
+  populateList();
+
   var mainContent = $("#main-content");
   mainContent.css("width", "100%");
   mainContent.css("height", availHeight + "px");

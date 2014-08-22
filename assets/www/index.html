@@ -19,13 +19,34 @@
 </head>
 
 <body onload="init();">
+	<div data-role="page" id="list-page" class="type-interior" data-theme="a">
+		<div data-role="header" data-position="fixed" data-tap-toggle="false">
+			<h3>My Idea Maps</h3>
+		</div>
+		<ul id="graph-list" data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
+			<li>
+				<a href="#initial-name-popup" data-rel="popup" data-position-to="window" data-transition="pop" id="">Create New Idea Map...</a>
+			</li>
+		</ul>
+		<div data-role="popup" id="initial-name-popup" data-theme="a" data-overlay-theme="a" class="ui-content" style="padding-bottom:2em;" data-dismissible="false">
+			<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a>
+			<h2 class="h2-header">Name Your Idea</h2>
+			<input type="text" id="initial-name-edit" placeholder="My Idea Name" style="text-align:center;" />
+			<div id="initial-replace-warning" style="text-align:center;color:red;display:none;">Warning: Another map with the same name will be overwritten</div>
+			<div style="width:100%;text-align:center;">
+				<button id="initial-confirm-name" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-check ui-btn-icon-left" disabled>Confirm</button>
+				<a data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-delete ui-btn-icon-left" data-transition="pop" data-direction="reverse">Cancel</a>
+			</div>
+		</div>
+	</div>
 	<div data-role="page" id="svg-page" class="type-interior" data-theme="a">
 		<div data-role="header" data-theme="a" data-position="fixed" data-tap-toggle="false" id="header">
-			<a href="#" data-icon="plus" data-iconpos="notext" id="new-map" class="ui-btn-left">new map</a>
+			<a href="#" data-icon="plus" data-iconpos="notext" id="clear-map" class="ui-btn-left"></a>
 			<div id="idea-name-wrapper">
-				<input type="text" maxlength="35" name="idea-name" id="idea-name" placeholder="Idea Name" data-mini="true">
+				<h3 style="display:inline-block" id="idea-name"></h3>
+				<a id="idea-name-change" href="#idea-name-popup" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-edit" data-rel="popup" data-position-to="window" data-transition="pop"></a>
 			</div>
-			<a href="#list-page" data-transition="slide" data-icon="bullets" data-iconpos="notext" id="list-maps" class="ui-btn-right">list maps</a>
+			<a href="#list-page" data-transition="slide" data-icon="bullets" data-iconpos="notext" id="list-maps" class="ui-btn-right" data-direction="reverse"></a>
 		</div>
 		<div id="main-content" data-theme="a"></div>
 		<div data-role="footer" data-position="fixed" data-tap-toggle="false" id="footer">
@@ -41,17 +62,23 @@
 					<a href="#" id="decrease-size" class="scale-change ui-btn ui-corner-all ui-btn-icon-notext ui-icon-minus"></a>
 					<a href="#" id="remove-node" class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-delete"></a>
 				</div>
-			</div>		
+			</div>
 		</div>
-	</div>
-	<div data-role="page" id="list-page" class="type-interior" data-theme="a">
-		<div>FOOBAR</div>
+		<div data-role="popup" id="idea-name-popup" data-theme="a" data-overlay-theme="a" class="ui-content" style="padding-bottom:2em;" data-dismissible="false">
+			<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a>
+			<h2 class="h2-header">Name Your Idea</h2>
+			<input type="text" id="idea-name-edit" placeholder="My Idea Name" style="text-align:center;" />
+			<div id="replace-warning"></div>
+			<div style="width:100%;text-align:center;">
+				<button id="confirm-name" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-check ui-btn-icon-left" data-transition="pop">Confirm</button>
+				<a data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-btn-inline ui-icon-delete ui-btn-icon-left" data-transition="pop" data-direction="reverse">Cancel</a>
+			</div>
+		</div>
 	</div>
 	<div data-role="dialog" data-rel="dialog" id="edit-page" class="type-interior" data-theme="a">
-		<div data-role="header">
-		</div>
+		<div data-role="header"></div>
 		<div role="main" class="ui-content">
-			<h2 style="text-align:center;font-size:24px;">Edit Element</h2>
+			<h2 class="h2-header">Edit Element</h2>
 			<form>
 				<input type="text" maxlength="25" name="node-title" id="node-title" placeholder="Title" data-mini="true">
 				<textarea maxlength="100" name="node-description" id="node-description" placeholder="Description" data-mini="true"></textarea>
